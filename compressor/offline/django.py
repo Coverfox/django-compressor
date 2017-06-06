@@ -14,17 +14,20 @@ from compressor.templatetags.compress import CompressorNode
 
 from django.template import defaulttags
 
-NOT_ALLOWED_TEMPLATE_TAGS = (
+NOT_ALLOWED_TEMPLATE_TAGS = [
     defaulttags.CsrfTokenNode,
     defaulttags.CycleNode,
     defaulttags.ForNode,
     defaulttags.IfNode,
     defaulttags.LoremNode,
     defaulttags.NowNode,
-    defaulttags.ResetCycleNode,
     defaulttags.VerbatimNode,
     defaulttags.WithNode,
-)
+]
+
+# In django 1.8 ResetCycleNode does not exist
+if hasattr(defaulttags, "ResetCycleNode"):
+    NOT_ALLOWED_TEMPLATE_TAGS.append(defaulttags.ResetCycleNode)   
 
 
 def handle_extendsnode(extendsnode, context):
