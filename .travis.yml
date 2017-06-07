@@ -27,8 +27,6 @@ matrix:
       env: TOXENV=py35-1.11.X
     - python: 3.6
       env: TOXENV=py36-1.11.X
-notifications:
-  irc: "irc.freenode.org#django-compressor"
 after_success:
   - pip install codecov
   - codecov
