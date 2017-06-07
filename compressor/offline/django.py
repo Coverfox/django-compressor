@@ -22,7 +22,6 @@ NOT_ALLOWED_TEMPLATE_TAGS = [
     defaulttags.LoremNode,
     defaulttags.NowNode,
     defaulttags.VerbatimNode,
-    defaulttags.WithNode,
 ]
 
 

@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 # flake8: noqa
 import os
 import sys
+import jinja2
 
 from collections import OrderedDict, defaultdict
 from fnmatch import fnmatch
@@ -229,7 +230,11 @@ class Command(BaseCommand):
         for template, nodes in compressor_nodes.items():
             template._log = log
             template._log_verbosity = verbosity
-            print("Compressing (%s)" % template.name)
+            if isinstance(template, jinja2.nodes.Template):
+                print("Compressing (%s)" % template.template_name)
+            else:
+                print("Compressing (%s)" % template.name)
+
             for node, contexts in nodes.items():
                 for context in contexts:
                     if context not in compressed_contexts:
