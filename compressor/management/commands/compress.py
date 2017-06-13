@@ -34,6 +34,25 @@ else:
         from StringIO import StringIO
 
 
+class InvalidVarException(object):
+    def __init__(self, context_keys):
+        self.context_keys = context_keys
+
+    def __mod__(self, missing):
+        try:
+            missing_str = unicode(missing)
+        except:
+            missing_str='Failed to create string representation'
+
+        raise Exception('Unknown template variable %r %s' % (missing, missing_str))
+
+    def __contains__(self, search):
+        if search in self.context_keys:
+            return True
+
+        return False
+
+
 class Command(BaseCommand):
     help = "Compress content outside of the request/response cycle"
 
@@ -160,6 +179,7 @@ class Command(BaseCommand):
             log.write("Found templates:\n\t" + "\n\t".join(templates) + "\n")
 
         contexts = settings.COMPRESS_OFFLINE_CONTEXT
+        context_keys = []
         if isinstance(contexts, six.string_types):
             try:
                 module, function = get_mod_func(contexts)
@@ -170,6 +190,13 @@ class Command(BaseCommand):
         elif not isinstance(contexts, (list, tuple)):
             contexts = [contexts]
         contexts = list(contexts) # evaluate generator
+
+        for context in contexts:
+            context_keys += context.keys()
+
+        for index, template_config in enumerate(settings.TEMPLATES):
+            if not template_config['OPTIONS'].get('string_if_invalid'):
+                settings.TEMPLATES[index]['OPTIONS']['string_if_invalid'] = InvalidVarException(context_keys)
 
         parser = self.__get_parser(engine)
         compressor_nodes = OrderedDict()
